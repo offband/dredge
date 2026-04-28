@@ -1,0 +1,29 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Local editor and OS files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Local environment and machine-specific state
+.env
+.env.*
+!.env.example
+.dredge/
+dredge-state/
+
+# Private working notes
+TODO.local.md
+*.local.md
+
+# Generated logs and ad hoc command output
+*.log
+*.tmp
+*.bak
