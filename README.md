@@ -126,15 +126,6 @@ Usage lives in the CLI help so it stays close to the implementation:
 
 CLI command errors are written to stderr as plain `dredge: ...` messages and return a non-zero exit code. JSON error envelopes are not part of the current public contract.
 
-## Project Reference
-
-- [Agent operating guide](AGENTS.md)
-- [Public JSON schemas](SCHEMA.md)
-
-## Contributing And Security
-
-- [Contributing guide](CONTRIBUTING.md)
-- [Security policy](SECURITY.md)
 
 ## License
 
