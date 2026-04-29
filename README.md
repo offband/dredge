@@ -42,9 +42,8 @@ It is not a SIEM, EDR, monitoring dashboard, policy engine, or autonomous securi
 
 ## Support Status
 
-Dredge is currently a `v0.2.0` Python source release focused on command-scoped filesystem tracing.
+Dredge is an early developer release (v0.2.0), currently available as Python source. It focuses on tracking filesystem changes during individual command runs.
 
-- The implementation is Python.
 - The design target is a macOS-friendly CLI wrapper for agent filesystem interaction. See [Access tracing design](docs/ACCESS_TRACING_DESIGN.md).
 - Pre-`1.0` schemas with public JSON contracts documented in [SCHEMA.md](SCHEMA.md).
 - Source checkout installation today; packaged binaries are roadmap work.
@@ -67,10 +66,6 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install git+https://github.com/offband/dredge.git
 ```
-
-Use `python -m pip`, not `python3 -m pip`, after activating the virtual environment. On Homebrew Python, `python3 -m pip install ...` can still target the externally managed system interpreter.
-
-Or install from a source checkout.
 
 Preview installer actions:
 
