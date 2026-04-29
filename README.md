@@ -44,10 +44,6 @@ It is not a SIEM, EDR, monitoring dashboard, policy engine, or autonomous securi
 
 Dredge is an early developer release (v0.2.0), currently available as Python source. It focuses on tracking filesystem changes during individual command runs.
 
-- The design target is a macOS-friendly CLI wrapper for agent filesystem interaction. See [Access tracing design](docs/ACCESS_TRACING_DESIGN.md).
-- Pre-`1.0` schemas with public JSON contracts documented in [SCHEMA.md](SCHEMA.md).
-- Source checkout installation today; packaged binaries are roadmap work.
-
 ## Install
 
 Dredge installs as a Python CLI. Install it on the machine where you want to run traced commands.
