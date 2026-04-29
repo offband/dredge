@@ -1,22 +1,21 @@
 # Dredge
 
-Dredge is a Python CLI for command-scoped filesystem tracing. The current collector records wrapper provenance plus before/after filesystem metadata outcomes for a CLI-launched command; it does not observe every read, list, or stat syscall.
+Dredge is a command-line tool that records what changes on your filesystem when a command runs.
 
-It runs an agent or tool command under a bounded trace, records the filesystem evidence Dredge can observe for that run, and stores it as append-only structured data. It is built for developers and local automation workflows that need a stable interface for what an agent touched without handing over the whole machine or turning Dredge into a background monitor.
+It captures the state before and after execution and logs the differences.
+
+It does not track every file read or system call — only the changes it can observe from the command’s execution.
 
 ## Why Dredge Exists
 
-Most agent tooling can perform work, but it does not always leave a clear local trail of its filesystem interaction. Dredge gives a command run a durable shape: trace sessions, filesystem events, event provenance, bounded summaries, and inspect hints.
+Most agent tools can do work, but they don’t leave a clear record of what they changed on your system.
 
-Dredge is intentionally conservative:
+Dredge turns a command run into a trace you can inspect later:
+• a timeline of filesystem changes  
+• records of what was created, modified, or removed  
+• a summary of what happened
 
-- No remote service.
-- No telemetry.
-- No automatic remediation.
-- No risk scoring.
-- No file contents in trace contexts by default.
-
-The result is a local source of truth that an agent can query carefully and a human can audit later.
+Dredge runs locally and keeps everything on your machine. It does not send data out, take automatic action, assign risk, or include file contents in traces by default.
 
 ## What You Get
 
