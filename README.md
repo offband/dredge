@@ -87,6 +87,16 @@ During development:
 PYTHONPATH=src python3 -m dredge --help
 ```
 
+## Testing
+
+Dredge's regression tests use Python's standard library and exercise the documented source CLI, installer dry run, and a complete trace that records a created file:
+
+```sh
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+```
+
+GitHub Actions runs the same suite on supported Python versions for pushes and pull requests.
+
 The primary workflow is:
 
 ```sh
