@@ -48,8 +48,40 @@ class DocumentedWorkflowSmokeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn(f"DRY RUN: would install Python launcher to {prefix}/bin/dredge", result.stdout)
+            self.assertIn(
+                f"DRY RUN: would install Dredge package to {prefix}/lib/dredge and launcher to {prefix}/bin/dredge",
+                result.stdout,
+            )
             self.assertFalse((prefix / "bin" / "dredge").exists())
+
+    def test_installer_writes_self_contained_launcher(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            prefix = Path(tmp) / "prefix"
+            result = subprocess.run(
+                ["bash", "scripts/install.sh", "--skip-deps", "--prefix", str(prefix)],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+            launcher = prefix / "bin" / "dredge"
+            installed_package = prefix / "lib" / "dredge" / "src" / "dredge"
+            self.assertTrue(launcher.exists())
+            self.assertTrue(installed_package.exists())
+            self.assertNotIn(str(REPO_ROOT), launcher.read_text(encoding="utf-8"))
+
+            run = subprocess.run(
+                [str(launcher), "version"],
+                cwd=tmp,
+                env={key: value for key, value in os.environ.items() if key != "PYTHONPATH"},
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(run.returncode, 0, run.stderr)
+            self.assertIn('"package": "dredge"', run.stdout)
 
     def test_installer_rejects_python_below_declared_minimum(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -164,15 +164,20 @@ build_and_install() {
   fi
 
   if [ "$DRY_RUN" -eq 1 ]; then
-    echo "DRY RUN: would install Python launcher to $PREFIX/bin/dredge"
+    echo "DRY RUN: would install Dredge package to $PREFIX/lib/dredge and launcher to $PREFIX/bin/dredge"
     return 0
   fi
 
-  mkdir -p "$PREFIX/bin"
+  mkdir -p "$PREFIX/bin" "$PREFIX/lib"
   REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  INSTALL_ROOT="$PREFIX/lib/dredge"
+  rm -rf "$INSTALL_ROOT"
+  mkdir -p "$INSTALL_ROOT"
+  cp -R "$REPO_ROOT/src" "$INSTALL_ROOT/src"
+  find "$INSTALL_ROOT/src" -type d -name __pycache__ -prune -exec rm -rf {} +
   cat > "$PREFIX/bin/dredge" <<EOF
 #!/usr/bin/env bash
-PYTHONPATH="$REPO_ROOT/src\${PYTHONPATH:+:\$PYTHONPATH}" exec python3 -m dredge "\$@"
+PYTHONPATH="$INSTALL_ROOT/src\${PYTHONPATH:+:\$PYTHONPATH}" exec python3 -m dredge "\$@"
 EOF
   chmod +x "$PREFIX/bin/dredge"
   echo "Installed dredge to $PREFIX/bin/dredge"
