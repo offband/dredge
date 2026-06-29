@@ -140,6 +140,15 @@ run_pkg_install() {
 
 check_python() {
   if need_cmd python3; then
+    if ! version="$(python3 - <<'PY'
+import sys
+print(f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
+raise SystemExit(0 if sys.version_info >= (3, 11) else 1)
+PY
+    )"; then
+      echo "python3 3.11+ is required; found $version." >&2
+      return 1
+    fi
     echo "Found python3: $(python3 --version)"
     return 0
   fi

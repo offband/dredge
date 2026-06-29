@@ -51,6 +51,30 @@ class DocumentedWorkflowSmokeTests(unittest.TestCase):
             self.assertIn(f"DRY RUN: would install Python launcher to {prefix}/bin/dredge", result.stdout)
             self.assertFalse((prefix / "bin" / "dredge").exists())
 
+    def test_installer_rejects_python_below_declared_minimum(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bin_dir = Path(tmp) / "bin"
+            bin_dir.mkdir()
+            python = bin_dir / "python3"
+            python.write_text(
+                "#!/usr/bin/env bash\n"
+                "echo 3.10.12\n"
+                "exit 1\n",
+                encoding="utf-8",
+            )
+            python.chmod(0o755)
+            result = subprocess.run(
+                ["bash", "scripts/install.sh", "--dry-run", "--skip-deps"],
+                cwd=REPO_ROOT,
+                env={**os.environ, "PATH": f"{bin_dir}:{os.environ['PATH']}"},
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("python3 3.11+ is required", result.stderr)
+
     def test_trace_run_records_created_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "workspace"
