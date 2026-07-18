@@ -8,10 +8,15 @@ from dredge.trace.runner import explain_event, run_trace, summarize_trace
 from dredge.trace.store import DredgeStoreError, TraceStore, print_json
 
 
+class DredgeArgumentParser(argparse.ArgumentParser):
+    def error(self, message: str) -> None:
+        raise ValueError(message)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
-    args = parser.parse_args(argv)
     try:
+        args = parser.parse_args(argv)
         if args.command == "version":
             print_json(
                 {
@@ -38,17 +43,17 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
+    parser = DredgeArgumentParser(
         prog="dredge",
         description="trace an agent command's filesystem interactions",
     )
-    subcommands = parser.add_subparsers(dest="command")
+    subcommands = parser.add_subparsers(dest="command", parser_class=DredgeArgumentParser)
 
     subcommands.add_parser("version", help="print runtime and schema versions")
     subcommands.add_parser("doctor", help="check local tracing prerequisites")
 
     trace = subcommands.add_parser("trace", help="work with command-scoped filesystem traces")
-    trace_subcommands = trace.add_subparsers(dest="trace_command", required=True)
+    trace_subcommands = trace.add_subparsers(dest="trace_command", required=True, parser_class=DredgeArgumentParser)
 
     run = trace_subcommands.add_parser(
         "run",

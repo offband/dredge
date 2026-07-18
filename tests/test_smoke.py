@@ -5,7 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
@@ -35,6 +35,19 @@ class DocumentedWorkflowSmokeTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("usage: dredge", result.stdout)
+
+    def test_cli_parse_errors_use_plain_error_contract(self) -> None:
+        stderr = StringIO()
+        with redirect_stderr(stderr):
+            self.assertEqual(main(["--not-a-real-option"]), 1)
+        self.assertIn("dredge: unrecognized arguments: --not-a-real-option", stderr.getvalue())
+        self.assertNotIn("usage:", stderr.getvalue())
+
+        stderr = StringIO()
+        with redirect_stderr(stderr):
+            self.assertEqual(main(["trace"]), 1)
+        self.assertIn("dredge: the following arguments are required: trace_command", stderr.getvalue())
+        self.assertNotIn("usage:", stderr.getvalue())
 
     def test_installer_dry_run_does_not_write_launcher(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
