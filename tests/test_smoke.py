@@ -96,6 +96,34 @@ class DocumentedWorkflowSmokeTests(unittest.TestCase):
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertIn('"package": "dredge"', run.stdout)
 
+    def test_installer_quotes_shell_special_prefix_in_launcher(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            prefix = Path(tmp) / "prefix with spaces and ' quote"
+            result = subprocess.run(
+                ["bash", "scripts/install.sh", "--skip-deps", "--prefix", str(prefix)],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+            launcher = prefix / "bin" / "dredge"
+            text = launcher.read_text(encoding="utf-8")
+            self.assertIn("INSTALL_ROOT=", text)
+            self.assertNotIn(f'PYTHONPATH="{prefix}', text)
+
+            run = subprocess.run(
+                [str(launcher), "version"],
+                cwd=tmp,
+                env={key: value for key, value in os.environ.items() if key != "PYTHONPATH"},
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(run.returncode, 0, run.stderr)
+            self.assertIn('"package": "dredge"', run.stdout)
+
     def test_installer_rejects_python_below_declared_minimum(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             bin_dir = Path(tmp) / "bin"

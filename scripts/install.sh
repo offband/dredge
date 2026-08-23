@@ -175,9 +175,11 @@ build_and_install() {
   mkdir -p "$INSTALL_ROOT"
   cp -R "$REPO_ROOT/src" "$INSTALL_ROOT/src"
   find "$INSTALL_ROOT/src" -type d -name __pycache__ -prune -exec rm -rf {} +
+  printf -v INSTALL_ROOT_QUOTED '%q' "$INSTALL_ROOT"
   cat > "$PREFIX/bin/dredge" <<EOF
 #!/usr/bin/env bash
-PYTHONPATH="$INSTALL_ROOT/src\${PYTHONPATH:+:\$PYTHONPATH}" exec python3 -m dredge "\$@"
+INSTALL_ROOT=$INSTALL_ROOT_QUOTED
+PYTHONPATH="\$INSTALL_ROOT/src\${PYTHONPATH:+:\$PYTHONPATH}" exec python3 -m dredge "\$@"
 EOF
   chmod +x "$PREFIX/bin/dredge"
   echo "Installed dredge to $PREFIX/bin/dredge"
